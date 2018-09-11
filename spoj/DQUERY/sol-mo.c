@@ -1,4 +1,4 @@
-// MO's algo based solution for DQUERY
+// MO's algo based solution for DQUERY - AC
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +18,12 @@ int inp() {
 		ch = getchar_unlocked();
 	} while(ch >= '0' && ch <= '9');
 	return n;
+}
+
+int fill(int A[], int size, int val){
+	for (int i=0; i<size; i++){
+		A[i] = val;
+	}
 }
 
 struct query {
@@ -126,32 +132,29 @@ void testSortQueries(){
 }
 
 struct query update_mo(struct query q, struct query mo, int A[], int F[]) {
-	// printf("solving Q[%d:%d] mo[%d:%d]\n", q.L, q.R, mo.L, mo.R);
 	while(mo.R < q.R) {
 		mo.sol += F[A[++mo.R]]++ == 0 ? 1 : 0;
-		// printf("R+ R:%d Sol:%d A:%d F:%d\n", mo.R, mo.sol, A[mo.R], F[A[mo.R]]);
 	}
 	while(mo.R > q.R) {
 		mo.sol -= F[A[mo.R--]]-- <= 1 ? 1 : 0;
-		// printf("R- R:%d Sol:%d A:%d F:%d\n", mo.R, mo.sol, A[mo.R], F[A[mo.R]]);
 	}
 	while(mo.L > q.L) {
 		mo.sol += F[A[--mo.L]]++ == 0 ? 1 : 0;
-		// printf("L+ R:%d Sol:%d A:%d F:%d\n", mo.L, mo.sol, A[mo.L], F[A[mo.L]]);
 	}
 	while(mo.L < q.L){
 		mo.sol -= F[A[mo.L++]]-- <= 1 ? 1 : 0;
-		// printf("L- R:%d Sol:%d A:%d F:%d\n", mo.L, mo.sol, A[mo.L], F[A[mo.L]]);
-	} 
+	}
 	return mo;
 }
 
 int main(int argc, char const *argv[])
 {
 	int print = 0;
-	int A[30000];
-	int F[1000000];
-	struct query Q[200000];
+	int A[30010];
+	int F[1000010];
+	fill(F, 1000010, 0);
+	struct query Q[200010];
+	int ans[200010];
 
 	// Read Array
 	int n = inp();
@@ -180,13 +183,12 @@ int main(int argc, char const *argv[])
 	F[A[Q[0].L]]++;
 	for(int i=0; i<q; i++){
 		mo = update_mo(Q[i], mo, A, F);
-		Q[i].sol = mo.sol;
+		ans[Q[i].pos] = mo.sol;
 	}
 
 	// Solutions
-	sortQueries(Q, 0, q-1, blockSize, 1);
 	for (int i = 0; i < q; ++i){
-		printf("%d\n", Q[i].sol);
+		printf("%d\n", ans[i]);
 	}
 
 	return 0;
